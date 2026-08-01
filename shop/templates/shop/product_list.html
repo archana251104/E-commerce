@@ -37,11 +37,24 @@
             {% for product in products %}
                 <div class="col">
                     <div class="card h-100 shadow-sm">
+                        
+                        <!-- Image Section -->
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <!-- Fixed No Image Box -->
+                            <div style="height: 200px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #999;">No Image</div>
+                        {% endif %}
+
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark stretched-link">
+                                {% if product.id %}
+                                    <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark stretched-link">
+                                        {{ product.name }}
+                                    </a>
+                                {% else %}
                                     {{ product.name }}
-                                </a>
+                                {% endif %}
                             </h5>
                             <h6 class="card-subtitle mb-2 text-success">${{ product.price }}</h6>
                             <p class="card-text text-muted">{{ product.description|truncatechars:50 }}</p>
