@@ -1,53 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My E-Commerce Store</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; }
-        .product-card { border: 1px solid #ddd; padding: 15px; width: 250px; border-radius: 8px; }
-        .product-name { font-weight: bold; font-size: 1.2em; }
-        .product-price { color: green; font-size: 1.1em; }
-    </style>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     
     <!-- Navigation Bar -->
-    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-        <div>
-            <a href="{% url 'product_list' %}" style="font-weight: bold; font-size: 1.2em; text-decoration: none; color: black;">My Store</a>
-        </div>
-        
-        <div>
-            {% if user.is_authenticated %}
-                <span>Hello, {{ user.username }}!</span>
-                
-                <a href="{% url 'order_history' %}" style="margin-left: 15px; text-decoration: none; color: black;">📦 My Orders</a>
-                <a href="{% url 'cart_view' %}" style="margin-left: 15px; text-decoration: none; color: blue;">🛒 Cart</a>
-                <a href="{% url 'logout' %}" style="margin-left: 15px; text-decoration: none; color: red;">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
-            {% endif %}
-        </div>
-    </div>
-
-    <h1>Welcome to Our Store!</h1>
-
-    <div class="product-grid">
-        {% for product in products %}
-            <div class="product-card">
-                <!-- This link makes the product name clickable -->
-                <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
-                    <div class="product-name">{{ product.name }}</div>
-                </a>
-                <div class="product-price">${{ product.price }}</div>
-                <p>{{ product.description|truncatechars:50 }}</p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'product_list' %}">🛍️ My Store</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><span class="nav-link text-light">Hello, {{ user.username }}!</span></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}">📦 Orders</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'cart_view' %}">🛒 Cart</a></li>
+                        <li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
             </div>
-        {% empty %}
-            <p>No products found. Go to the admin panel and add some!</p>
-        {% endfor %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Welcome to Our Store!</h1>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark stretched-link">
+                                    {{ product.name }}
+                                </a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-success">${{ product.price }}</h6>
+                            <p class="card-text text-muted">{{ product.description|truncatechars:50 }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No products found. Go to the admin panel and add some!</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
