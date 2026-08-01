@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Your Cart</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .cart-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .total { font-weight: bold; font-size: 1.2em; margin-top: 20px; }
+        .checkout-btn { display: inline-block; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Your Shopping Cart</h1>
+    <a href="{% url 'product_list' %}">&larr; Continue Shopping</a>
+    
+    {% if cart.cartitem_set.all %}
+        <ul style="list-style: none; padding: 0;">
+            {% for item in cart.cartitem_set.all %}
+                <li class="cart-item">
+                    <strong>{{ item.product.name }}</strong> 
+                    - Quantity: {{ item.quantity }} 
+                    - Price: ${{ item.total_price }}
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="total">
+            Total Price: ${{ cart.total_price }}
+        </div>
+        
+        <!-- This is the Checkout Button -->
+        <a href="{% url 'checkout' %}" class="checkout-btn">Proceed to Checkout</a>
+        
+    {% else %}
+        <p>Your cart is empty. Go buy something!</p>
+    {% endif %}
+</body>
+</html>

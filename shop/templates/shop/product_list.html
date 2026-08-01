@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>My E-Commerce Store</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .product-card { border: 1px solid #ddd; padding: 15px; width: 250px; border-radius: 8px; }
+        .product-name { font-weight: bold; font-size: 1.2em; }
+        .product-price { color: green; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    
+    <!-- Navigation Bar -->
+    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+        <div>
+            <a href="{% url 'product_list' %}" style="font-weight: bold; font-size: 1.2em; text-decoration: none; color: black;">My Store</a>
+        </div>
+        
+        <div>
+            {% if user.is_authenticated %}
+                <span>Hello, {{ user.username }}!</span>
+                
+                <a href="{% url 'order_history' %}" style="margin-left: 15px; text-decoration: none; color: black;">📦 My Orders</a>
+                <a href="{% url 'cart_view' %}" style="margin-left: 15px; text-decoration: none; color: blue;">🛒 Cart</a>
+                <a href="{% url 'logout' %}" style="margin-left: 15px; text-decoration: none; color: red;">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <h1>Welcome to Our Store!</h1>
+
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">
+                <!-- This link makes the product name clickable -->
+                <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: black;">
+                    <div class="product-name">{{ product.name }}</div>
+                </a>
+                <div class="product-price">${{ product.price }}</div>
+                <p>{{ product.description|truncatechars:50 }}</p>
+            </div>
+        {% empty %}
+            <p>No products found. Go to the admin panel and add some!</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

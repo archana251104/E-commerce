@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>My Orders</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .order-box { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: blue; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'product_list' %}" class="back-link">&larr; Back to Store</a>
+    
+    <h1>My Order History</h1>
+    
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-box">
+                <h3>Order #{{ order.id }}</h3>
+                <p><strong>Date:</strong> {{ order.created_at }}</p>
+                <p><strong>Total Paid:</strong> ${{ order.total_price }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+</body>
+</html>
