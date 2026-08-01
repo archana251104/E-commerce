@@ -2,9 +2,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Cart, CartItem, Order, OrderItem
 from django.contrib.auth.decorators import login_required
 
+from .models import Product, Cart, CartItem, Order, OrderItem, Category # <--- Import Category
+
 def product_list(request):
+    category_id = request.GET.get('category') # Get category from URL
     products = Product.objects.all()
-    return render(request, 'shop/product_list.html', {'products': products})
+    categories = Category.objects.all()
+    
+    if category_id:
+        products = products.filter(category_id=category_id)
+        
+    return render(request, 'shop/product_list.html', {'products': products, 'categories': categories})
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
