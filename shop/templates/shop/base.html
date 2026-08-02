@@ -10,8 +10,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome for additional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -30,21 +36,21 @@
 
         /* Navbar - Dark Navy / Slate */
         .navbar {
-            background-color: #1e293b !important;  /* DARK NAVY */
+            background-color: #1e293b !important;
             padding: 14px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-bottom: none;
         }
         .navbar-brand {
             font-weight: 700;
-            color: #ffffff !important;  /* WHITE TEXT */
+            color: #ffffff !important;
             font-size: 1.4rem;
             letter-spacing: -0.5px;
         }
         .navbar-brand i { color: #14b8a6; margin-right: 8px; font-size: 1.3rem; }
         
         .nav-link { 
-            color: #cbd5e1 !important;  /* LIGHT GRAY TEXT */
+            color: #cbd5e1 !important;
             font-weight: 500; 
             font-size: 0.95rem;
             transition: color 0.2s ease;
@@ -52,6 +58,22 @@
             padding-right: 16px !important;
         }
         .nav-link:hover { color: #14b8a6 !important; }
+
+        /* Cart and Wishlist Badge */
+        .badge-notification {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+            border: 2px solid #1e293b;
+        }
 
         /* Hero Section - Bright Gradient */
         .hero-section {
@@ -124,7 +146,7 @@
         /* LOGIN & REGISTER BUTTONS */
         .btn-register {
             background-color: transparent;
-            color: #ffffff;          /* WHITE TEXT (for dark navbar) */
+            color: #ffffff;
             border: none;
             border-radius: 50px;
             padding: 8px 24px;
@@ -140,7 +162,7 @@
         .btn-login {
             background-color: transparent;
             border: none;
-            color: #cbd5e1;          /* LIGHT GRAY TEXT */
+            color: #cbd5e1;
             border-radius: 50px;
             padding: 8px 22px;
             font-weight: 600;
@@ -151,15 +173,56 @@
             color: #ffffff;
         }
 
+        /* Dropdown Menu */
+        .dropdown-menu {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 8px 0;
+        }
+        .dropdown-item {
+            color: #cbd5e1;
+            padding: 8px 20px;
+            transition: 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #334155;
+            color: #14b8a6;
+        }
+        .dropdown-divider {
+            border-color: #334155;
+        }
+
         /* Footer - Dark Navy */
         footer {
-            background-color: #1e293b !important;  /* SAME DARK NAVY */
+            background-color: #1e293b !important;
             color: #cbd5e1 !important;
             border-top: none;
             padding: 30px 0;
+            margin-top: auto;
         }
         footer p { margin: 0; font-weight: 500; }
         footer i { color: #ef4444; }
+
+        /* Toast Container */
+        .toast-container {
+            z-index: 1050;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                padding-top: 10px;
+            }
+            .nav-item {
+                padding: 4px 0;
+            }
+            .btn-login, .btn-register {
+                display: block;
+                text-align: center;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -167,31 +230,100 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'product_list' %}"><i class="bi bi-shop"></i>My E-Commerce Store</a>
+            <a class="navbar-brand" href="{% url 'product_list' %}">
+                <i class="bi bi-shop"></i>My E-Commerce Store
+            </a>
             
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
-                        <li class="nav-item me-2"><span class="nav-link" style="color: #14b8a6 !important; font-weight: 600;">Hi, {{ user.username }}!</span></li>
+                        <!-- User Greeting -->
+                        <li class="nav-item me-2">
+                            <span class="nav-link" style="color: #14b8a6 !important; font-weight: 600;">
+                                <i class="bi bi-person-circle me-1"></i>Hi, {{ user.username }}!
+                            </span>
+                        </li>
                         
-                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"><i class="bi bi-person-circle me-1"></i> Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'order_history' %}"><i class="bi bi-box-seam me-1"></i> Orders</a></li>
+                        <!-- Profile Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-grid-3x3-gap-fill"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="bi bi-person-circle me-2"></i> Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'order_history' %}">
+                                    <i class="bi bi-box-seam me-2"></i> Orders
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'wishlist:wishlist' %}">
+                                    <i class="bi bi-heart me-2"></i> Wishlist
+                                    {% if user.wishlist %}
+                                        <span class="badge bg-danger float-end">{{ user.wishlist.get_total_items }}</span>
+                                    {% endif %}
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'bookings:booking_list' %}">
+                                    <i class="bi bi-calendar-event me-2"></i> Bookings
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="color: #f87171;">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Cart with Badge -->
                         <li class="nav-item me-2">
                             <a class="nav-link position-relative" href="{% url 'cart_view' %}" aria-label="View cart">
                                 <i class="bi bi-cart3 fs-5"></i>
+                                {% if user.cart %}
+                                    <span class="badge-notification">{{ user.cart.total_items }}</span>
+                                {% endif %}
                                 <span class="visually-hidden">View cart</span>
                             </a>
                         </li>
+                        
+                        <!-- Quick Wishlist Link -->
+                        <li class="nav-item me-2">
+                            <a class="nav-link position-relative" href="{% url 'wishlist:wishlist' %}" aria-label="View wishlist">
+                                <i class="bi bi-heart fs-5" style="color: #f87171;"></i>
+                                {% if user.wishlist %}
+                                    <span class="badge-notification" style="background-color: #f87171;">{{ user.wishlist.get_total_items }}</span>
+                                {% endif %}
+                                <span class="visually-hidden">View wishlist</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Logout Button (Alternative) -->
                         <li class="nav-item">
                             <form method="post" action="{% url 'logout' %}" style="display: inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-4" style="color: #f87171;">Logout</button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-4" style="color: #f87171; border-color: #f87171;">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                </button>
                             </form>
                         </li>
                     {% else %}
-                        <!-- UPDATED BUTTONS -->
-                        <li class="nav-item me-3"><a class="btn btn-login" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-register" href="{% url 'register' %}">Register</a></li>
+                        <!-- Guest User Buttons -->
+                        <li class="nav-item me-3">
+                            <a class="btn btn-login" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-register" href="{% url 'register' %}">
+                                <i class="bi bi-person-plus me-1"></i> Register
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
@@ -200,15 +332,67 @@
 
     <!-- MAIN CONTENT BLOCK -->
     <div class="container-fluid p-0 main-content">
+        <!-- Messages/Alerts -->
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         {% block content %}
         {% endblock %}
     </div>
 
     <!-- FOOTER -->
     <footer class="text-center">
-        <p> <i>&copy; 2026 My E-Commerce Store.</i></p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p><i class="bi bi-shop me-2"></i>My E-Commerce Store</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p><i class="bi bi-heart-fill me-2" style="color: #f87171;"></i> Made with love</p>
+                </div>
+                <div class="col-md-4">
+                    <p><i class="bi bi-c-circle me-2"></i> 2026 All Rights Reserved</p>
+                </div>
+            </div>
+        </div>
     </footer>
 
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Additional JavaScript for Toast Notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+            
+            // Add active class to current nav link
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                    link.style.color = '#14b8a6 !important';
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
