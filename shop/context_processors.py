@@ -1,8 +1,28 @@
 from .models import Cart
+from wishlist.models import Wishlist
 
 def cart_count(request):
-    """Context processor to add cart count to all templates"""
     if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        return {'cart_count': cart.total_items()}
-    return {'cart_count': 0}
+        try:
+            cart = Cart.objects.get(user=request.user)
+            count = cart.get_total_items()
+        except Cart.DoesNotExist:
+            count = 0
+    else:
+        session_key = request.session.session_key
+        if session_key:
+            try:
+                cart = Cart.objects.get(session_key=session_key, user=None)
+                count = cart.get_total_items()
+            except Cart.DoesNotExist:
+                count = 0
+        else:
+            count = 0
+    return {'cart_count': count}
+
+def wishlist_count(request):
+    if request.user.is_authenticated:
+        count = Wishlist.objects.filter(user=request.user).count()
+    else:
+        count = 0
+    return {'wishlist_count': count}

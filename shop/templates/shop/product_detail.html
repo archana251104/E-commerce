@@ -39,7 +39,7 @@
                     <h1 class="card-title display-6">{{ product.name }}</h1>
                     
                     <div class="d-flex align-items-center gap-3 my-3">
-                        <h2 class="text-success mb-0">${{ product.price }}</h2>
+                        <h2 class="text-success mb-0">₹{{ product.price }}</h2>
                         <span class="badge bg-{% if product.stock > 0 %}success{% else %}danger{% endif %}">
                             {% if product.stock > 0 %}
                                 <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} units)
@@ -64,7 +64,7 @@
                         <div class="alert alert-info">
                             <i class="fas fa-calendar-alt"></i> <strong>Available for Booking</strong>
                             <br>
-                            <small>Price per day: ${{ product.booking_price_per_day }} | Min: {{ product.min_booking_days }} days | Max: {{ product.max_booking_days }} days</small>
+                            <small>Price per day: ₹{{ product.booking_price_per_day }} | Min: {{ product.min_booking_days }} days | Max: {{ product.max_booking_days }} days</small>
                             <br>
                             <small>Available units: {{ product.available_quantity_for_booking }}</small>
                         </div>
@@ -194,7 +194,7 @@
                                 {% endif %}
                                 <div class="card-body">
                                     <h6 class="card-title">{{ related.name }}</h6>
-                                    <p class="card-text text-primary fw-bold">${{ related.price }}</p>
+                                    <p class="card-text text-primary fw-bold">₹{{ related.price }}</p>
                                     <a href="{% url 'shop:product_detail' related.id %}" class="btn btn-sm btn-outline-primary w-100">View</a>
                                 </div>
                             </div>
