@@ -25,9 +25,9 @@
                 <div class="card-body">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Home</a></li>
                             {% if product.category %}
-                                <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
                             {% endif %}
                             <li class="breadcrumb-item active">{{ product.name }}</li>
                         </ol>
@@ -74,7 +74,7 @@
                         <!-- Add to Cart -->
                         <div class="col-md-{% if product.is_bookable %}6{% else %}12{% endif %}">
                             {% if product.stock > 0 %}
-                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-lg w-100">
+                                <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-shopping-cart"></i> Add to Cart
                                 </a>
                             {% else %}
@@ -113,7 +113,7 @@
                         
                         <!-- Back to Store -->
                         <div class="col-md-6">
-                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary w-100">
+                            <a href="{% url 'shop:product_list' %}" class="btn btn-outline-secondary w-100">
                                 <i class="fas fa-arrow-left"></i> Back to Store
                             </a>
                         </div>
@@ -152,7 +152,7 @@
                                 <div class="card-body">
                                     <h6 class="card-title">{{ related.name }}</h6>
                                     <p class="card-text text-primary fw-bold">${{ related.price }}</p>
-                                    <a href="{% url 'product_detail' related.id %}" class="btn btn-sm btn-outline-primary w-100">View</a>
+                                    <a href="{% url 'shop:product_detail' related.id %}" class="btn btn-sm btn-outline-primary w-100">View</a>
                                 </div>
                             </div>
                         </div>
