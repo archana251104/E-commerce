@@ -9,11 +9,21 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'is_active', 'is_featured', 'created_at']
+    list_display = ['name', 'price_inr', 'compare_price_inr', 'stock', 'is_active', 'is_featured', 'created_at']
     list_filter = ['is_active', 'is_featured', 'category']
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ['created_at', 'updated_at']
+    
+    def price_inr(self, obj):
+        return f"₹{obj.price:,.2f}"
+    price_inr.short_description = 'Price (INR)'
+    
+    def compare_price_inr(self, obj):
+        if obj.compare_price:
+            return f"₹{obj.compare_price:,.2f}"
+        return '-'
+    compare_price_inr.short_description = 'Compare Price (INR)'
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
@@ -26,7 +36,11 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_number', 'user', 'total_amount', 'status', 'created_at']
+    list_display = ['order_number', 'user', 'total_inr', 'status', 'created_at']
     list_filter = ['status', 'payment_status', 'created_at']
     search_fields = ['order_number', 'user__username', 'email']
     readonly_fields = ['order_number', 'created_at', 'updated_at']
+    
+    def total_inr(self, obj):
+        return f"₹{obj.total_amount:,.2f}"
+    total_inr.short_description = 'Total (INR)'

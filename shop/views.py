@@ -7,9 +7,6 @@ from .models import Product, Category, Cart, CartItem, Order, OrderItem
 from .forms import OrderForm
 import uuid
 
-from django.shortcuts import render
-from .models import Product, Category
-
 def home(request):
     featured_products = Product.objects.filter(
         is_featured=True, 
@@ -35,11 +32,13 @@ def product_list(request):
     products = Product.objects.filter(is_active=True, stock__gt=0)
     categories = Category.objects.all()
     
+    # Category filter
     category_slug = request.GET.get('category')
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
     
+    # Search filter
     search_query = request.GET.get('q')
     if search_query:
         products = products.filter(
@@ -48,6 +47,7 @@ def product_list(request):
             Q(category__name__icontains=search_query)
         )
     
+    # Price range filter
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     if min_price:
@@ -55,13 +55,18 @@ def product_list(request):
     if max_price:
         products = products.filter(price__lte=max_price)
     
+    # Sorting
     sort_by = request.GET.get('sort', '-created_at')
+    
+    # Apply sorting based on the parameter
     if sort_by == 'price':
         products = products.order_by('price')
     elif sort_by == '-price':
         products = products.order_by('-price')
     elif sort_by == 'name':
         products = products.order_by('name')
+    elif sort_by == '-created_at':
+        products = products.order_by('-created_at')
     else:
         products = products.order_by('-created_at')
     
@@ -196,8 +201,8 @@ def checkout(request):
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
-            'phone': request.user.profile.phone,
-            'address': request.user.profile.address,
+            'phone': request.user.profile.phone if hasattr(request.user, 'profile') else '',
+            'address': request.user.profile.address if hasattr(request.user, 'profile') else '',
         }
         form = OrderForm(initial=initial_data)
     

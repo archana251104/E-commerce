@@ -48,9 +48,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'shop.context_processors.cart_count',
                 'shop.context_processors.wishlist_count',
+                'shop.context_processors.cart_total',  # Added this
             ],
             'libraries': {
-                'currency': 'shop.templatetags.currency',  # Added for currency filter
+                'currency': 'shop.templatetags.currency',
             }
         },
     },

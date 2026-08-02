@@ -24,7 +24,7 @@
     </head>
 
     <body>
-        <!-- Navigation - GREEN -->
+        <!-- Navigation -->
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'shop:home' %}">
@@ -95,6 +95,9 @@
                                 <li><a class="dropdown-item" href="{% url 'shop:order_history' %}">
                                         <i class="fas fa-list"></i> My Orders
                                     </a></li>
+                                <li><a class="dropdown-item" href="{% url 'wishlist:view_wishlist' %}">
+                                        <i class="fas fa-heart text-danger"></i> Wishlist
+                                    </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -136,7 +139,7 @@
         <!-- Content -->
         {% block content %}{% endblock %}
 
-        <!-- Footer - GREEN -->
+        <!-- Footer -->
         <footer class="footer">
             <div class="container">
                 <div class="row">
@@ -160,6 +163,7 @@
                             <li><a href="{% url 'shop:product_list' %}"><i class="fas fa-chevron-right"></i> Products</a></li>
                             <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
                             <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                            <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
                         </ul>
                     </div>
                     <div class="col-lg-3 col-md-6 mb-4">
@@ -178,7 +182,7 @@
                         <h6>Contact Info</h6>
                         <ul class="footer-links">
                             <li><i class="fas fa-map-marker-alt"></i> 123 Commerce Street, City</li>
-                            <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                            <li><i class="fas fa-phone"></i> +91 98765 43210</li>
                             <li><i class="fas fa-envelope"></i> info@mystore.com</li>
                             <li><i class="fas fa-clock"></i> Mon-Sat: 9AM - 9PM</li>
                         </ul>
@@ -210,11 +214,22 @@
             // Add active class to current nav item
             document.addEventListener('DOMContentLoaded', function () {
                 const currentPath = window.location.pathname;
-                const navLinks = document.querySelectorAll('.navbar .nav-link');
+                const navLinks = document.querySelectorAll('.navbar .nav-link:not(.dropdown-toggle)');
                 navLinks.forEach(link => {
-                    if (link.getAttribute('href') === currentPath) {
+                    const href = link.getAttribute('href');
+                    if (href && href !== '#' && currentPath.includes(href)) {
                         link.style.background = 'rgba(255,255,255,0.15)';
                         link.style.borderRadius = '50px';
+                    }
+                });
+            });
+
+            // Add smooth transition for cart and wishlist counts
+            document.addEventListener('DOMContentLoaded', function () {
+                const badges = document.querySelectorAll('.badge');
+                badges.forEach(badge => {
+                    if (parseInt(badge.textContent) > 0) {
+                        badge.style.animation = 'pulse 2s infinite';
                     }
                 });
             });
