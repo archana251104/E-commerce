@@ -1,92 +1,88 @@
-{% extends 'shop/base.html' %}
-{% load static %}
+{% extends 'base.html' %}
+{% block title %}Products - E-Commerce Store{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    
-    <!-- New Premium Hero Banner -->
-    <div class="hero-section">
-        <h1 class="display-4">Welcome to Our Store</h1>
-        <p class="lead text-muted">Shop the latest premium trends.</p>
-        <a href="#products" class="btn btn-light">Shop Now</a>
-    </div>
-
     <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 mb-4">
-            <div class="bg-white p-3 shadow-sm">
-                <h5 class="fw-bold mb-3"><i class="bi bi-filter-square me-2"></i>Categories</h5>
-                <hr>
-                <div class="d-grid gap-2">
-                    <a href="{% url 'shop:product_list' %}" class="btn category-btn">All Products</a>
-                    {% for cat in categories %}
-                        <a href="?category={{ cat.id }}" class="btn category-btn">{{ cat.name }}</a>
-                    {% endfor %}
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <h6>Categories</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="{% url 'shop:product_list' %}" class="text-decoration-none">All Products</a></li>
+                            {% for category in categories %}
+                                <li>
+                                    <a href="{% url 'shop:product_list' %}?category={{ category.slug }}" class="text-decoration-none {% if current_category == category.slug %}text-primary fw-bold{% endif %}">
+                                        {{ category.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <hr>
+                        <h6>Price Range</h6>
+                        <div class="mb-2">
+                            <input type="number" name="min_price" class="form-control form-control-sm mb-1" placeholder="Min Price" value="{{ request.GET.min_price }}">
+                            <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max Price" value="{{ request.GET.max_price }}">
+                        </div>
+                        <h6>Sort By</h6>
+                        <select name="sort" class="form-select form-select-sm mb-2">
+                            <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest</option>
+                            <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="-price" {% if sort_by == '-price' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <!-- Product Grid -->
-        <div class="col-md-9" id="products">
-            {% if products %}
-                <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col-md-9">
+            {% if search_query %}
+                <h4>Search Results for "{{ search_query }}"</h4>
+                <hr>
+            {% endif %}
+            <div class="row">
+                {% if products %}
                     {% for product in products %}
-                        <div class="col">
-                            <div class="card product-card h-100">
-                                <!-- Product Image -->
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 220px; object-fit: cover;">
-                                {% else %}
-                                    <div style="height: 220px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #aaa;">
-                                        <i class="bi bi-image" style="font-size: 3rem;"></i>
-                                    </div>
-                                {% endif %}
-                                
+                        <div class="col-md-4 col-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body">
-                                    <h6 class="product-title">
-                                        <a href="{% url 'shop:product_detail' product.id %}" class="text-decoration-none text-dark">
-                                            {{ product.name }}
-                                        </a>
-                                    </h6>
-                                    <p class="product-price">₹{{ product.price }}</p>
-                                    <p class="card-text small text-muted">{{ product.description|truncatewords:15 }}</p>
-                                    
-                                    <!-- Stock Status -->
-                                    <span class="badge bg-{% if product.stock > 0 %}success{% else %}danger{% endif %} mb-2">
-                                        {% if product.stock > 0 %}
-                                            <i class="bi bi-check-circle"></i> In Stock
-                                        {% else %}
-                                            <i class="bi bi-x-circle"></i> Out of Stock
+                                    <h6 class="card-title">{{ product.name|truncatechars:30 }}</h6>
+                                    <p class="card-text">
+                                        <span class="text-primary fw-bold">${{ product.price }}</span>
+                                        {% if product.compare_price %}
+                                            <span class="text-muted"><del>${{ product.compare_price }}</del></span>
                                         {% endif %}
-                                    </span>
-                                    
-                                    <div class="d-grid gap-2 mt-2">
-                                        <!-- Add to Cart Button -->
-                                        {% if product.stock > 0 %}
-                                            <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-primary btn-sm">
-                                                <i class="bi bi-cart-plus"></i> Add to Cart
-                                            </a>
-                                            <!-- Buy Now Button -->
-                                            <a href="{% url 'shop:buy_now' product.id %}" class="btn btn-success btn-sm">
-                                                <i class="bi bi-bag-check"></i> Buy Now
-                                            </a>
-                                        {% else %}
-                                            <button class="btn btn-secondary btn-sm" disabled>
-                                                <i class="bi bi-x-circle"></i> Out of Stock
+                                    </p>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary btn-sm">View Details</a>
+                                        <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-success btn-sm w-100">
+                                                <i class="fas fa-cart-plus"></i> Add to Cart
                                             </button>
-                                        {% endif %}
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5 bg-white shadow-sm">
-                    <h4 class="text-muted">No products found.</h4>
-                    <a href="{% url 'shop:product_list' %}" class="btn btn-primary mt-3">Refresh</a>
-                </div>
-            {% endif %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No products found.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

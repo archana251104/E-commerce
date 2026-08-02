@@ -1,323 +1,128 @@
-{% extends 'shop/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}{{ product.name }} - E-Commerce Store{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
     <div class="row">
-        <!-- Product Image -->
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body text-center">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 400px; object-fit: contain; width: 100%;">
-                    {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
-                            <div class="text-center">
-                                <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>
-                                <p class="text-muted mt-2">No Image Available</p>
-                            </div>
-                        </div>
+            <div class="card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="max-height: 500px; object-fit: contain;">
+                {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
+                        <i class="fas fa-image text-white" style="font-size: 5rem;"></i>
+                    </div>
+                {% endif %}
+                {% if product.image2 or product.image3 %}
+                <div class="row mt-2">
+                    {% if product.image2 %}
+                    <div class="col-4">
+                        <img src="{{ product.image2.url }}" class="img-thumbnail" style="height: 100px; object-fit: cover; cursor: pointer;" onclick="changeMainImage(this.src)">
+                    </div>
+                    {% endif %}
+                    {% if product.image3 %}
+                    <div class="col-4">
+                        <img src="{{ product.image3.url }}" class="img-thumbnail" style="height: 100px; object-fit: cover; cursor: pointer;" onclick="changeMainImage(this.src)">
+                    </div>
                     {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
-        
-        <!-- Product Details -->
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}">Home</a></li>
-                            {% if product.category %}
-                                <li class="breadcrumb-item"><a href="{% url 'shop:product_list' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
-                            {% endif %}
-                            <li class="breadcrumb-item active">{{ product.name }}</li>
-                        </ol>
-                    </nav>
-                    
-                    <h1 class="card-title display-6">{{ product.name }}</h1>
-                    
-                    <div class="d-flex align-items-center gap-3 my-3">
-                        <h2 class="text-success mb-0">₹{{ product.price }}</h2>
-                        <span class="badge bg-{% if product.stock > 0 %}success{% else %}danger{% endif %}">
-                            {% if product.stock > 0 %}
-                                <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} units)
-                            {% else %}
-                                <i class="fas fa-times-circle"></i> Out of Stock
-                            {% endif %}
-                        </span>
-                        {% if product.wishlist_count > 0 %}
-                            <span class="badge bg-danger">
-                                <i class="fas fa-heart"></i> {{ product.wishlist_count }}
-                            </span>
-                        {% endif %}
-                    </div>
-                    
-                    <p class="card-text">{{ product.description }}</p>
-                    
-                    {% if product.category %}
-                        <p><strong>Category:</strong> {{ product.category.name }}</p>
-                    {% endif %}
-                    
-                    {% if product.is_bookable %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-calendar-alt"></i> <strong>Available for Booking</strong>
-                            <br>
-                            <small>Price per day: ₹{{ product.booking_price_per_day }} | Min: {{ product.min_booking_days }} days | Max: {{ product.max_booking_days }} days</small>
-                            <br>
-                            <small>Available units: {{ product.available_quantity_for_booking }}</small>
-                        </div>
-                    {% endif %}
-                    
-                    <hr>
-                    
-                    <!-- Quantity Selector -->
-                    {% if product.stock > 0 %}
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label fw-bold">Quantity</label>
-                        <div class="input-group" style="max-width: 150px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity()">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="{{ product.stock }}">
-                            <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity()">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                        <small class="text-muted">Available: {{ product.stock }} units</small>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Action Buttons -->
+            <h2>{{ product.name }}</h2>
+            <div class="mb-3">
+                <span class="h3 text-primary">${{ product.price }}</span>
+                {% if product.compare_price %}
+                    <span class="text-muted"><del>${{ product.compare_price }}</del></span>
+                    <span class="badge bg-danger ms-2">{{ product.get_discount_percentage }}% OFF</span>
+                {% endif %}
+            </div>
+            <p><strong>Category:</strong> <a href="{% url 'shop:product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></p>
+            <p><strong>Stock:</strong> 
+                {% if product.is_in_stock %}
+                    <span class="text-success"><i class="fas fa-check-circle"></i> {{ product.stock }} available</span>
+                {% else %}
+                    <span class="text-danger"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                {% endif %}
+            </p>
+            <div class="mb-3">
+                <h5>Description</h5>
+                <p>{{ product.description|linebreaks }}</p>
+            </div>
+
+            <div class="card bg-light p-3">
+                <form method="post" action="{% url 'shop:add_to_cart' product.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'shop:product_detail' product.slug %}">
                     <div class="row g-2">
-                        <!-- Add to Cart -->
-                        <div class="col-md-6">
-                            {% if product.stock > 0 %}
-                                <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-primary btn-lg w-100">
-                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                </a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-lg w-100" disabled>
-                                    <i class="fas fa-shopping-cart"></i> Out of Stock
-                                </button>
-                            {% endif %}
+                        <div class="col-4">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control">
                         </div>
-                        
-                        <!-- Buy Now Button -->
-                        <div class="col-md-6">
-                            {% if product.stock > 0 %}
-                                <form method="post" action="{% url 'shop:buy_now' product.id %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="quantity" id="buy_now_quantity" value="1">
-                                    <button type="submit" class="btn btn-success btn-lg w-100">
-                                        <i class="fas fa-bolt"></i> Buy Now
-                                    </button>
-                                </form>
-                            {% else %}
-                                <button class="btn btn-secondary btn-lg w-100" disabled>
-                                    <i class="fas fa-bolt"></i> Unavailable
-                                </button>
-                            {% endif %}
+                        <div class="col-8">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-success w-100" {% if not product.is_in_stock %}disabled{% endif %}>
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
                         </div>
                     </div>
-                    
-                    <!-- Booking Button -->
-                    {% if product.is_bookable %}
-                    <div class="row g-2 mt-2">
-                        <div class="col-12">
-                            <a href="{% url 'bookings:create_booking' product.id %}" class="btn btn-info btn-lg w-100">
-                                <i class="fas fa-calendar-check"></i> Book Now
-                            </a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="row g-2 mt-2">
-                        <!-- Wishlist Button -->
-                        <div class="col-md-6">
-                            <form method="post" action="{% url 'wishlist:toggle_wishlist' %}" id="wishlistForm">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="btn btn-outline-danger w-100" id="wishlistBtn">
-                                    <i class="fas fa-heart"></i> 
-                                    {% if in_wishlist %}
-                                        Remove from Wishlist
-                                    {% else %}
-                                        Add to Wishlist
-                                    {% endif %}
-                                </button>
-                            </form>
-                        </div>
-                        
-                        <!-- Back to Store -->
-                        <div class="col-md-6">
-                            <a href="{% url 'shop:product_list' %}" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-arrow-left"></i> Back to Store
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Additional Action Buttons -->
-                    <div class="row g-2 mt-2">
-                        <div class="col-md-6">
-                            <a href="{% url 'wishlist:wishlist' %}" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-list"></i> View Wishlist
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="{% url 'bookings:booking_list' %}" class="btn btn-outline-success w-100">
-                                <i class="fas fa-calendar-alt"></i> My Bookings
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                </form>
+            </div>
+
+            <div class="mt-3 d-grid gap-2">
+                <a href="{% url 'wishlist:toggle_wishlist' product.id %}?next={{ request.path }}" class="btn btn-outline-danger">
+                    <i class="fas fa-heart"></i> {% if product in user.wishlist_set.all %}Remove from{% else %}Add to{% endif %} Wishlist
+                </a>
+                <a href="{% url 'bookings:create_booking' product.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-plus"></i> Book Now
+                </a>
+                <form method="post" action="{% url 'shop:buy_now' product.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-warning w-100" {% if not product.is_in_stock %}disabled{% endif %}>
+                        <i class="fas fa-bolt"></i> Buy Now
+                    </button>
+                </form>
             </div>
         </div>
     </div>
-    
-    <!-- Related Products Section -->
+
+    <!-- Related Products -->
     {% if related_products %}
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3 class="mb-4">Related Products</h3>
-                <div class="row">
-                    {% for related in related_products|slice:":4" %}
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="card h-100 shadow-sm">
-                                {% if related.image %}
-                                    <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}" style="height: 150px; object-fit: cover;">
-                                {% else %}
-                                    <div style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-image" style="font-size: 2rem; color: #ccc;"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="card-body">
-                                    <h6 class="card-title">{{ related.name }}</h6>
-                                    <p class="card-text text-primary fw-bold">₹{{ related.price }}</p>
-                                    <a href="{% url 'shop:product_detail' related.id %}" class="btn btn-sm btn-outline-primary w-100">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Related Products</h3>
+            <hr>
+        </div>
+        {% for product in related_products %}
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ product.name|truncatechars:25 }}</h6>
+                        <p class="card-text text-primary">${{ product.price }}</p>
+                        <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-primary btn-sm w-100">View Details</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
+    </div>
     {% endif %}
 </div>
 
-<!-- JavaScript for Quantity Selector and Buy Now -->
 <script>
-// Quantity selector functions
-function incrementQuantity() {
-    const input = document.getElementById('quantity');
-    const max = parseInt(input.getAttribute('max')) || 999;
-    let value = parseInt(input.value) || 1;
-    if (value < max) {
-        input.value = value + 1;
-        updateBuyNowQuantity();
-    }
+function changeMainImage(src) {
+    document.querySelector('.card-img-top').src = src;
 }
-
-function decrementQuantity() {
-    const input = document.getElementById('quantity');
-    let value = parseInt(input.value) || 1;
-    if (value > 1) {
-        input.value = value - 1;
-        updateBuyNowQuantity();
-    }
-}
-
-function updateBuyNowQuantity() {
-    const quantityInput = document.getElementById('quantity');
-    const buyNowInput = document.getElementById('buy_now_quantity');
-    if (buyNowInput) {
-        buyNowInput.value = quantityInput.value;
-    }
-}
-
-// Update Buy Now quantity when quantity changes
-document.addEventListener('DOMContentLoaded', function() {
-    const quantityInput = document.getElementById('quantity');
-    if (quantityInput) {
-        quantityInput.addEventListener('change', updateBuyNowQuantity);
-        quantityInput.addEventListener('input', updateBuyNowQuantity);
-    }
-});
-
-// Wishlist AJAX functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const wishlistForm = document.getElementById('wishlistForm');
-    const wishlistBtn = document.getElementById('wishlistBtn');
-    
-    if (wishlistForm) {
-        wishlistForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            
-            fetch('{% url "wishlist:toggle_wishlist" %}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'added') {
-                    wishlistBtn.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
-                    wishlistBtn.className = 'btn btn-danger w-100';
-                    showToast('Product added to wishlist!', 'success');
-                } else if (data.status === 'removed') {
-                    wishlistBtn.innerHTML = '<i class="fas fa-heart"></i> Add to Wishlist';
-                    wishlistBtn.className = 'btn btn-outline-danger w-100';
-                    showToast('Product removed from wishlist!', 'info');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('An error occurred. Please try again.', 'danger');
-            });
-        });
-    }
-    
-    function showToast(message, type) {
-        let toastContainer = document.querySelector('.toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
-            document.body.appendChild(toastContainer);
-        }
-        
-        const toastId = 'toast-' + Date.now();
-        const toastHtml = `
-            <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        `;
-        
-        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-        const toastElement = document.getElementById(toastId);
-        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
-        toast.show();
-        
-        toastElement.addEventListener('hidden.bs.toast', function() {
-            this.remove();
-        });
-    }
-});
 </script>
-
-<!-- Toast Container -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
-
 {% endblock %}
