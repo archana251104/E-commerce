@@ -183,6 +183,56 @@ def checkout(request):
     return render(request, 'shop/checkout.html', context)
 
 @login_required
+def buy_now(request, product_id):
+    """Buy Now - Direct checkout for a single product"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if product is in stock
+    if product.stock <= 0:
+        messages.error(request, f'Sorry, {product.name} is out of stock.')
+        return redirect('shop:product_detail', product_id=product_id)
+    
+    if request.method == 'POST':
+        with transaction.atomic():
+            # Get quantity from POST
+            quantity = int(request.POST.get('quantity', 1))
+            
+            # Validate quantity
+            if quantity > product.stock:
+                messages.error(request, f'Sorry, only {product.stock} units available.')
+                return redirect('shop:product_detail', product_id=product_id)
+            
+            # Create order directly (skip cart)
+            order = Order.objects.create(
+                user=request.user,
+                total_price=product.price * quantity,
+                status='pending',
+                shipping_address=request.POST.get('shipping_address', ''),
+                payment_method=request.POST.get('payment_method', 'cash'),
+            )
+            
+            # Create order item
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity,
+                price=product.price
+            )
+            
+            # Update product stock
+            product.stock -= quantity
+            product.save()
+            
+            messages.success(request, 'Order placed successfully!')
+            return redirect('shop:order_confirmation', order_id=order.id)
+    
+    context = {
+        'product': product,
+        'single_item': True,  # For checkout template to know it's a single item
+    }
+    return render(request, 'shop/checkout.html', context)
+
+@login_required
 def order_confirmation(request, order_id):
     """Show order confirmation page"""
     order = get_object_or_404(Order, id=order_id, user=request.user)
