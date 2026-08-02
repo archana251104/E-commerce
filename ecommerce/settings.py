@@ -49,6 +49,9 @@ TEMPLATES = [
                 'shop.context_processors.cart_count',
                 'shop.context_processors.wishlist_count',
             ],
+            'libraries': {
+                'currency': 'shop.templatetags.currency',  # Added for currency filter
+            }
         },
     },
 ]
@@ -82,6 +85,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ===== STATIC & MEDIA FILES =====
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -91,6 +95,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ===== AUTHENTICATION SETTINGS =====
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'shop:home'
 LOGOUT_REDIRECT_URL = 'shop:home'
+
+# ===== CURRENCY SETTINGS - INDIAN RUPEES =====
+USE_L10N = True
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = ','
+DECIMAL_SEPARATOR = '.'
+
+# Currency configuration
+CURRENCY_SYMBOL = '₹'
+CURRENCY_CODE = 'INR'
+CURRENCY_PLACES = 2  # Decimal places

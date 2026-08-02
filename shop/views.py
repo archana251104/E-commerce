@@ -7,9 +7,21 @@ from .models import Product, Category, Cart, CartItem, Order, OrderItem
 from .forms import OrderForm
 import uuid
 
+from django.shortcuts import render
+from .models import Product, Category
+
 def home(request):
-    featured_products = Product.objects.filter(is_featured=True, is_active=True, stock__gt=0)[:8]
-    new_products = Product.objects.filter(is_active=True, stock__gt=0).order_by('-created_at')[:8]
+    featured_products = Product.objects.filter(
+        is_featured=True, 
+        is_active=True, 
+        stock__gt=0
+    )[:8]
+    
+    new_products = Product.objects.filter(
+        is_active=True, 
+        stock__gt=0
+    ).order_by('-created_at')[:8]
+    
     categories = Category.objects.all()
     
     context = {
