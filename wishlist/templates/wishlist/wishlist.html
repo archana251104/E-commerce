@@ -1,4 +1,4 @@
-{% extends 'shop/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -6,52 +6,48 @@
     <div class="row">
         <div class="col-12">
             <h1 class="mb-4">My Wishlist</h1>
-            
+
             {% if wishlist_items %}
-                <div class="row">
-                    {% for item in wishlist_items %}
-                    <div class="col-md-4 col-lg-3 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="height: 200px; object-fit: cover;">
-                            {% else %}
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <span class="text-muted">No Image</span>
-                            </div>
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ item.product.name }}</h5>
-                                <p class="card-text text-primary fw-bold">${{ item.product.price }}</p>
-                                <div class="d-flex gap-2">
-                                    <a href="{% url 'shop:product_detail' item.product.id %}" class="btn btn-outline-primary btn-sm">View</a>
-                                    <form method="post" action="{% url 'wishlist:toggle_wishlist' %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-heart"></i> Remove
-                                        </button>
-                                    </form>
-                                    {% if item.product.is_bookable %}
-                                        <a href="{% url 'bookings:create_booking' item.product.id %}" class="btn btn-success btn-sm">Book</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="card-footer text-muted small">
-                                Added: {{ item.added_at|date:"M d, Y" }}
+            <div class="row">
+                {% for item in wishlist_items %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-muted">No Image</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.product.name }}</h5>
+                            <p class="card-text text-primary fw-bold">${{ item.product.price }}</p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'shop:product_detail' item.product.slug %}" class="btn btn-outline-primary btn-sm">View</a>
+                                <form method="post" action="{% url 'wishlist:toggle_wishlist' item.product.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-heart"></i> Remove
+                                    </button>
+                                </form>
                             </div>
                         </div>
+                        <div class="card-footer text-muted small">
+                            Added: {{ item.added_at|date:"M d, Y" }}
+                        </div>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="text-center py-5">
-                    <div class="mb-4">
-                        <i class="fas fa-heart fa-4x text-muted"></i>
-                    </div>
-                    <h3>Your wishlist is empty</h3>
-                    <p class="text-muted">Browse our products and add items you love!</p>
-                    <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Start Shopping</a>
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-heart fa-4x text-muted"></i>
                 </div>
+                <h3>Your wishlist is empty</h3>
+                <p class="text-muted">Browse our products and add items you love!</p>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Start Shopping</a>
+            </div>
             {% endif %}
         </div>
     </div>
