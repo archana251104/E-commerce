@@ -17,15 +17,15 @@
 
         <!-- Custom CSS -->
         {% load static %}
-        {% load currency %}
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
         {% block extra_head %}{% endblock %}
+        {% block extra_css %}{% endblock %}
     </head>
 
     <body>
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'shop:home' %}">
                     <i class="fas fa-store"></i> My Store
@@ -61,7 +61,7 @@
 
                     <form class="search-form d-flex me-2" method="get" action="{% url 'shop:product_list' %}">
                         <input class="form-control" type="search" name="q" placeholder="Search products..." value="{{ search_query|default:'' }}">
-                        <button class="btn" type="submit">
+                        <button class="btn btn-outline-light" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
@@ -70,7 +70,7 @@
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="{% url 'wishlist:view_wishlist' %}">
                                 <i class="fas fa-heart"></i>
-                                <span class="badge position-absolute top-0 start-100 translate-middle">
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
                                     {{ wishlist_count|default:0 }}
                                 </span>
                             </a>
@@ -78,7 +78,7 @@
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="{% url 'shop:cart' %}">
                                 <i class="fas fa-shopping-cart"></i>
-                                <span class="badge position-absolute top-0 start-100 translate-middle">
+                                <span class="badge bg-warning position-absolute top-0 start-100 translate-middle">
                                     {{ cart_count|default:0 }}
                                 </span>
                             </a>
@@ -113,7 +113,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn-primary" href="{% url 'accounts:register' %}">
+                            <a class="nav-link btn btn-primary text-white" href="{% url 'accounts:register' %}">
                                 <i class="fas fa-user-plus"></i> Register
                             </a>
                         </li>
@@ -140,51 +140,51 @@
         {% block content %}{% endblock %}
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer bg-dark text-white py-4 mt-5">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="brand">
+                        <div class="brand h4">
                             <i class="fas fa-store"></i> My Store
                         </div>
                         <p class="mt-2">Your trusted online store for premium quality products at the best prices.</p>
                         <div class="social-links mt-3">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-6 mb-4">
                         <h6>Quick Links</h6>
-                        <ul class="footer-links">
-                            <li><a href="{% url 'shop:home' %}"><i class="fas fa-chevron-right"></i> Home</a></li>
-                            <li><a href="{% url 'shop:product_list' %}"><i class="fas fa-chevron-right"></i> Products</a></li>
-                            <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                            <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
-                            <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <ul class="list-unstyled">
+                            <li><a href="{% url 'shop:home' %}" class="text-white-50 text-decoration-none"><i class="fas fa-chevron-right"></i> Home</a></li>
+                            <li><a href="{% url 'shop:product_list' %}" class="text-white-50 text-decoration-none"><i class="fas fa-chevron-right"></i> Products</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                            <li><a href="#" class="text-white-50 text-decoration-none"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
                         </ul>
                     </div>
                     <div class="col-lg-3 col-md-6 mb-4">
                         <h6>Categories</h6>
-                        <ul class="footer-links">
+                        <ul class="list-unstyled">
                             {% for category in categories|slice:":6" %}
-                            <li><a href="{% url 'shop:product_list' %}?category={{ category.slug }}">
+                            <li><a href="{% url 'shop:product_list' %}?category={{ category.slug }}" class="text-white-50 text-decoration-none">
                                     <i class="fas fa-chevron-right"></i> {{ category.name }}
                                 </a></li>
                             {% empty %}
-                            <li><a href="#"><i class="fas fa-chevron-right"></i> No categories</a></li>
+                            <li class="text-white-50"><i class="fas fa-chevron-right"></i> No categories</li>
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="col-lg-3 col-md-6 mb-4">
                         <h6>Contact Info</h6>
-                        <ul class="footer-links">
-                            <li><i class="fas fa-map-marker-alt"></i> 123 Commerce Street, City</li>
-                            <li><i class="fas fa-phone"></i> +91 98765 43210</li>
-                            <li><i class="fas fa-envelope"></i> info@mystore.com</li>
-                            <li><i class="fas fa-clock"></i> Mon-Sat: 9AM - 9PM</li>
+                        <ul class="list-unstyled">
+                            <li class="text-white-50"><i class="fas fa-map-marker-alt"></i> 123 Commerce Street, City</li>
+                            <li class="text-white-50"><i class="fas fa-phone"></i> +91 98765 43210</li>
+                            <li class="text-white-50"><i class="fas fa-envelope"></i> info@mystore.com</li>
+                            <li class="text-white-50"><i class="fas fa-clock"></i> Mon-Sat: 9AM - 9PM</li>
                         </ul>
                     </div>
                 </div>
@@ -217,19 +217,8 @@
                 const navLinks = document.querySelectorAll('.navbar .nav-link:not(.dropdown-toggle)');
                 navLinks.forEach(link => {
                     const href = link.getAttribute('href');
-                    if (href && href !== '#' && currentPath.includes(href)) {
-                        link.style.background = 'rgba(255,255,255,0.15)';
-                        link.style.borderRadius = '50px';
-                    }
-                });
-            });
-
-            // Add smooth transition for cart and wishlist counts
-            document.addEventListener('DOMContentLoaded', function () {
-                const badges = document.querySelectorAll('.badge');
-                badges.forEach(badge => {
-                    if (parseInt(badge.textContent) > 0) {
-                        badge.style.animation = 'pulse 2s infinite';
+                    if (href && href !== '#' && currentPath.includes(href) && href !== '/') {
+                        link.classList.add('active');
                     }
                 });
             });
